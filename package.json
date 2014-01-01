@@ -1,0 +1,22 @@
+{
+  "name": "MallKhoj App",
+  "version": "0.1.0",
+  "description": "MallKhoj the mall app",
+  "main": "server.js",
+  "dependencies": {
+    "express": "~3.2.5",
+    "stylus": "~0.32.1",
+    "yummly": "~0.2.4"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.3.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+   "keywords": [
+    "deals"
+  ]
+}
