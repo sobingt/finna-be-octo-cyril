@@ -31,29 +31,52 @@ exports.findDeals = function(req, res) {
         s= req.params.s;
         t= req.params.t;
 
-    q = q.split(" ");
-    console.log(q);
+    if(t < 0 || typeof t == 'undefined') {
+      t = 5;
+    }
+    //q = q.split(" ");
+    //console.log(q);
 
         // TO-DO
         //filter the search results accorging to the params
     if( q && s && t ) {
-    db.collection('deals', function(err, collection) {
-        collection.find().toArray(function(err, items) {
-            console.log(items);
-            res.send(items);
-        });
-    });
+      db.collection('deals', function(err, collection) {
+          collection.find().toArray(function(err, items) {
+              console.log(items);
+              res.header("Access-Control-Allow-Origin", "*");
+              res.send(items);
+          });
+      });
     }
     else if (s && t) {
-
-    }
-    else if (q) {
       db.collection('deals', function(err, collection) {
-        collection.find().toArray(function(err, items) {
+        collection.find().limit(t).toArray(function(err, items) {
             console.log(items);
+            res.header("Access-Control-Allow-Origin", "*");
             res.send(items);
         });
-    });
+      });
+    }
+    else if (q) {
+      console.log('inside q');
+      db.collection('deals', function(err, collection) {
+        var w = '/^'+q+'$';
+        collection.find().limit(t).toArray(function(err, items) {
+            console.log(items);
+            res.header("Access-Control-Allow-Origin", "*");
+            res.send(items);
+        });
+      });
+    }
+    else {
+     db.collection('deals', function(err, collection) {
+        var w = '/^'+q+'$';
+        collection.find().limit(t).toArray(function(err, items) {
+            console.log(items);
+            res.header("Access-Control-Allow-Origin", "*");
+            res.send(items);
+        });
+      }); 
     }
 };
 
@@ -103,6 +126,7 @@ exports.addDeal = function(req, res) {
                 res.send({'error':'An error has occurred'});
             } else {
                 console.log('Success: ' + JSON.stringify(result[0]));
+                res.header("Access-Control-Allow-Origin", "*");
                 res.send(result[0]);
             }
         });
@@ -163,6 +187,7 @@ exports.addDeal = function(req, res) {
                 res.send({'error':'An error has occurred'});
             } else {
                 console.log('' + result + ' document(s) updated');
+                res.header("Access-Control-Allow-Origin", "*");
                 res.send(meal);
             }
         });
@@ -198,6 +223,7 @@ exports.findDealById = function(req, res) {
                 res.send({'error':'An error has occurred - ' + err});
             } else {
                 console.log('' + result + ' document(s) deleted');
+
                 res.send(req.body);
             }
         });
