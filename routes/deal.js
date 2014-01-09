@@ -5,19 +5,25 @@ var Server = mongo.Server,
     BSON = mongo.BSONPure;
 
 var server = new Server('localhost', 27017, {auto_reconnect: true});
-db = new Db('mallkhoj', server, {safe: true});	
+db = new Db('mallkhoj', server, {safe: true});
 
 db.open(function(err, db) {
     if(!err) {
-        console.log("Connected to 'mallkhoj' database");
-        //populateDB();
-        db.collection('meals', {safe:true}, function(err, collection) {
-            if (err) {
-                console.log("The 'mallkhoj' collection doesn't exist. Creating it with sample data...");
-                //populateDB();
-            }
-        });
+      console.log("Connected to 'mallkhoj' database");
+      //populateDB();
+      db.collection('deals', {safe:true}, function(err, collection) {
+        if (err) {
+            console.log("The 'mallkhoj' collection doesn't exist. Creating it with sample data...");
+            //populateDB();
+        }
+      });
     }
+});
+
+db.collection('deals', {safe:true}, function(err, collection) {
+  collection.ensureIndex( {name: "text"}, function(err, items) {
+
+  } );
 });
 
 exports.findDeals = function(req, res) {
@@ -25,14 +31,30 @@ exports.findDeals = function(req, res) {
         s= req.params.s;
         t= req.params.t;
 
+    q = q.split(" ");
+    console.log(q);
+
         // TO-DO
         //filter the search results accorging to the params
+    if( q && s && t ) {
     db.collection('deals', function(err, collection) {
         collection.find().toArray(function(err, items) {
             console.log(items);
             res.send(items);
         });
     });
+    }
+    else if (s && t) {
+
+    }
+    else if (q) {
+      db.collection('deals', function(err, collection) {
+        collection.find().toArray(function(err, items) {
+            console.log(items);
+            res.send(items);
+        });
+    });
+    }
 };
 
 exports.addDeal = function(req, res) {
