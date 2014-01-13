@@ -51,10 +51,12 @@ define([
 		},
 
 		parse: function(response) {
-			this.total = response.totalMatchCount;
-			this.skipped = response.criteria.resultsToSkip;
+			this.total = 10;
+			//this.total = response.totalMatchCount;
+                        //this.skipped = response.criteria.resultsToSkip;
+			this.skipped = 10;
 			this.pageNumber = Math.round(this.skipped / config.pageSize) + 1;
-
+			console.log(this.pageNumber);
 			return response.matches;
 		}
 	});

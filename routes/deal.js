@@ -30,7 +30,7 @@ exports.findDeals = function(req, res) {
     var q= req.params.q;
         s= req.params.s;
         t= req.params.t;
-
+	q= "";
     q = q.split(" ");
     console.log(q);
 
