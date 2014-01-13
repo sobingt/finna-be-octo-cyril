@@ -87,6 +87,7 @@ app.get('/deals/q=:q/s=:s/t=:t', deal.findDeals);
 app.get('/deals/s=:s/t=:t', deal.findDeals);
 
 app.get('/deals/q=:q', deal.findDeals);
+app.get('/deals', deal.findDeals);
 
 //app.get('/deals/:id', deal);
 
