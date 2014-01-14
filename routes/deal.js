@@ -1,4 +1,8 @@
 var mongo = require('mongodb');
+// Mongo setup
+var databaseUrl = "mallkhoj"; 
+var collections = ["deals"]
+var db = require("mongojs").connect(databaseUrl, collections);
 
 var Server = mongo.Server,
     Db = mongo.Db,
@@ -26,57 +30,116 @@ db.collection('deals', {safe:true}, function(err, collection) {
   } );
 });
 
-exports.findDeals = function(req, res) {
-    var q= req.params.q;
-        s= req.params.s;
-        t= req.params.t;
+// exports.searchDeals = function(patterns, req, res) {
+//   db.collection('deals', function(err, collection) {
+//     collection.find({index : {$all: patterns }}).toArray(function(err, items) {
+//       if( err || !items) {
+//         res.header("Access-Control-Allow-Origin", "*");
+//         console.log('nothing');
+//         res.send([]);
+//       } else {
+//         res.header("Access-Control-Allow-Origin", "*");
+//         console.log(items);
+//         res.send(items);
+//       }
+//     }); 
+//   });
+// }
+function caseInsensitive(keyword){
+  // Trim
+  keyword = keyword.replace(/^\s+|\s+$/g, '');
 
-        if(t < 0 || typeof t == 'undefined') {
-      t = 5;
-    }
+  return new RegExp(keyword, 'gi');
+}
+
+exports.findDealsByCity = function(req, res) {
+  var city = req.params.c;
+  db.collection('deals', function(err, collection) {
+      collection.find({"brand.location.city": city}).toArray(function(err, items) {
+          console.log(items);
+          res.header("Access-Control-Allow-Origin", "*");
+          res.send(items);
+      });
+  });
+}
+
+exports.findDeals = function(req, res) {
+  var q= req.params.q;
+      s= parseInt(req.params.s);
+      t= parseInt(req.params.t);
+  if (q) {
+    // Break out all the words
+    var words = req.params.q.split(" ");
+    var patterns = [];
+    // Create case insensitve patterns for each word
+    words.forEach(function(item){
+      patterns.push(caseInsensitive(item));
+    });
+  }
+
+  if(t < 0 || typeof t == 'undefined') {
+    t = 5;
+  }
     //q = q.split(" ");
     //console.log(q);
         // TO-DO
         //filter the search results accorging to the params
-    if( q && s && t ) {
-      db.collection('deals', function(err, collection) {
-          collection.find().toArray(function(err, items) {
-              console.log(items);
-              res.header("Access-Control-Allow-Origin", "*");
-              res.send(items);
-          });
+  if( q && s && t ) {
+    db.collection('deals', function(err, collection) {
+     // collection.find({index : {$all: patterns }}).skip((s-1)*t).limit(t).toArray(function(err, items) {
+      collection.aggregate([{$skip : s}, {$match : {index:{$all : patterns}}},{$limit : t }], function(err, items){
+        if( err || !items) {
+          res.header("Access-Control-Allow-Origin", "*");
+          console.log('nothing');
+          res.send([]);
+        } else {
+          res.header("Access-Control-Allow-Origin", "*");
+          console.log(items);
+          res.send(items);
+        }
+      });   
+    });
+  }
+  else if (s && t) {
+    db.collection('deals', function(err, collection) {
+      collection.aggregate([{$skip: s}, {$limit: t}], function(err, items) {
+          console.log(items);
+          res.header("Access-Control-Allow-Origin", "*");
+          res.send(items);
       });
-    }
-    else if (s && t) {
-      db.collection('deals', function(err, collection) {
-        collection.find().limit(t).toArray(function(err, items) {
-            console.log(items);
-            res.header("Access-Control-Allow-Origin", "*");
-            res.send(items);
-        });
-      });
-    }
-    else if (q) {
-      console.log('inside q');
-      db.collection('deals', function(err, collection) {
-        var w = '/^'+q+'$';
-        collection.find().limit(t).toArray(function(err, items) {
-            console.log(items);
-            res.header("Access-Control-Allow-Origin", "*");
-            res.send(items);
-        });
-      });
-    }
-    else {
-     db.collection('deals', function(err, collection) {
-        var w = '/^'+q+'$';
-        collection.find().limit(t).toArray(function(err, items) {
-            console.log(items);
-            res.header("Access-Control-Allow-Origin", "*");
-            res.send(items);
-        });
+    });
+  }
+  else if (q) {
+    console.log('inside q');
+    db.collection('deals', function(err, collection) {
+      collection.find({index : {$all: patterns }}).toArray(function(err, items) {
+        if( err || !items) {
+          res.header("Access-Control-Allow-Origin", "*");
+          console.log('nothing');
+          res.send([]);
+        } else {
+          res.header("Access-Control-Allow-Origin", "*");
+          console.log(items);
+          res.send(items);
+        }
       }); 
-    }
+    });
+  }
+  else {
+   db.collection('deals', function(err, collection) {
+      collection.find().toArray(function(err, items) {
+        if( err || !items) {
+          res.header("Access-Control-Allow-Origin", "*");
+          console.log('nothing');
+          res.send([]);
+        } else {
+          res.header("Access-Control-Allow-Origin", "*");
+          console.log(items);
+          res.send(items);
+        }
+      }); 
+    });
+  }
 };
 
 exports.addDeal = function(req, res) {

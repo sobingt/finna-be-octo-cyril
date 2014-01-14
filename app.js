@@ -1,6 +1,6 @@
 var express = require('express')
 ,   deal = require('./routes/deal.js')
-,   dealtest = require('./routes/dealtest.js')
+//,   dealtest = require('./routes/dealtest.js')
 ,   stylus = require('stylus')
 ,   routes    = require('./routes/')
 ,   http = require('http');
@@ -33,15 +33,9 @@ var sendBack = function (req, res, error, response, json) {
 };
 
 // Import the data
-require('./import')(db);
+//require('./import')(db);
 
 // Facilitates queries on mongodb
-function caseInsensitive(keyword){
-  // Trim
-  keyword = keyword.replace(/^\s+|\s+$/g, '');
-
-  return new RegExp(keyword, 'gi');
-}
 
 var getByQuery = function (req, res) {
     console.log('getByQuery: /deals/q=' + req.params.q + '/s=' +
@@ -54,30 +48,27 @@ var getById = function (req, res) {
 };
 
 //
-app.get('/q/:term', function(req, res){
-
+app.get('/q=:term', function(req, res){
   var term = req.params.term;
-
   // Break out all the words
   var words = req.params.term.split(" ");
   var patterns = [];
-
   // Create case insensitve patterns for each word
   words.forEach(function(item){
-    patterns.push(caseInsensitive(item));
+    patterns.push(deal.caseInsensitive(item));
   });
-
-  db.deals.find({index : {$all: patterns }}, function(err, results) {
-    if( err || !results) {
-      console.log('nothing');
-      res.json([]);
-    } else {
-      console.log(results);
-      res.json(results);
-    }
-  });  
-  
-
+  db.deals.find({index : {$all: patterns }}, function(err, items) {
+      if( err || !items) {
+        res.header("Access-Control-Allow-Origin", "*");
+        console.log('nothing');
+        res.send([]);
+      } else {
+        res.header("Access-Control-Allow-Origin", "*");
+        console.log(items);
+        res.send(items);
+      }
+    });
+ 
 });
 
 
@@ -86,8 +77,9 @@ app.get('/deals/q=:q/s=:s/t=:t', deal.findDeals);
 
 app.get('/deals/s=:s/t=:t', deal.findDeals);
 
-app.get('/deals/q=:q', deal.findDeals);
+//app.get('/deals/q=:q', deal.findDeals);
 app.get('/deals', deal.findDeals);
+app.get('/deals/c=:c', deal.findDealsByCity);
 
 //app.get('/deals/:id', deal);
 
