@@ -54,27 +54,35 @@ function caseInsensitive(keyword){
 
 exports.findDealsByCity = function(req, res) {
   var city = req.params.c;
-  db.collection('deals', function(err, collection) {
-      collection.find({"brand.location.city": city}).toArray(function(err, items) {
-          console.log(items);
-          res.header("Access-Control-Allow-Origin", "*");
-          res.send(items);
+      s= parseInt(req.params.s);
+      t= parseInt(req.params.t);
+  if (city && s>=0 && t) {
+    console.log(city);
+    db.collection('deals', function(err, collection) {
+      //collection.aggregate([{$match : {'brand.locations.city': 'mumbai'}}, {$skip : s}, {$limit : t }], function(err, items){
+        collection.find({"brand.locations.city": city}).limit(t).skip(s).toArray(function(err, items) {
+        console.log(items);
+        res.header("Access-Control-Allow-Origin", "*");
+        res.send(items);
       });
-  });
+    });
+  }
 }
 
 /*
  *
  */
 exports.findDealsByCategory = function(req, res) {
-    var category = req.params.cat;
-    console.log(category);
-    db.collection('deals', function(err, collection) {
-        collection.find({"categories": category}).toArray(function(err, item) {
-          res.header('Access-Control-Allow-Origin', "*");     // TODO - Make this more secure!!
-          res.send(item);
-        });
-    });
+  var category = req.params.cat;
+    s= parseInt(req.params.s);
+    t= parseInt(req.params.t);
+  console.log(category);
+  db.collection('deals', function(err, collection) {
+      collection.find({"categories": category}).limit(t).skip(s).toArray(function(err, item) {
+        res.header('Access-Control-Allow-Origin', "*");     // TODO - Make this more secure!!
+        res.send(item);
+      });
+  });
 }
 
 

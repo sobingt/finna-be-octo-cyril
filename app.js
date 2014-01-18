@@ -33,7 +33,7 @@ var sendBack = function (req, res, error, response, json) {
 };
 
 // Import the data
-//require('./import')(db);
+require('./import')(db);
 
 // Facilitates queries on mongodb
 
@@ -79,8 +79,8 @@ app.get('/deals/s=:s/t=:t', deal.findDeals);
 
 //app.get('/deals/q=:q', deal.findDeals);
 app.get('/deals', deal.findDeals);
-app.get('/deals/c=:c', deal.findDealsByCity);
-app.get('/deals/cat=:cat', deal.findDealsByCategory);
+app.get('/deals/c=:c/s=:s/t=:t', deal.findDealsByCity);
+app.get('/deals/cat=:cat/s=:s/t=:t', deal.findDealsByCategory);
 //app.get('/deals/:id', deal);
 
 //app.get('/deals', dealdb.allDeals);
