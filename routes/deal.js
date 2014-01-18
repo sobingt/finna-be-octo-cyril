@@ -63,6 +63,21 @@ exports.findDealsByCity = function(req, res) {
   });
 }
 
+/*
+ *
+ */
+exports.findDealsByCategory = function(req, res) {
+    var category = req.params.cat;
+    console.log(category);
+    db.collection('deals', function(err, collection) {
+        collection.find({"categories": category}).toArray(function(err, item) {
+          res.header('Access-Control-Allow-Origin', "*");     // TODO - Make this more secure!!
+          res.send(item);
+        });
+    });
+}
+
+
 exports.findDeals = function(req, res) {
   var q= req.params.q;
       s= parseInt(req.params.s);

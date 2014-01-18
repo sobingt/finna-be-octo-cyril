@@ -80,7 +80,7 @@ app.get('/deals/s=:s/t=:t', deal.findDeals);
 //app.get('/deals/q=:q', deal.findDeals);
 app.get('/deals', deal.findDeals);
 app.get('/deals/c=:c', deal.findDealsByCity);
-
+app.get('/deals/cat=:cat', deal.findDealsByCategory);
 //app.get('/deals/:id', deal);
 
 //app.get('/deals', dealdb.allDeals);
