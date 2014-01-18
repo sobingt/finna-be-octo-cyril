@@ -80,11 +80,12 @@ exports.findDeals = function(req, res) {
   if(t < 0 || typeof t == 'undefined') {
     t = 5;
   }
+
     //q = q.split(" ");
     //console.log(q);
         // TO-DO
         //filter the search results accorging to the params
-  if( q && s && t ) {
+  if( q && s>=0 && t ) {
     db.collection('deals', function(err, collection) {
      // collection.find({index : {$all: patterns }}).skip((s-1)*t).limit(t).toArray(function(err, items) {
       collection.aggregate([{$skip : s}, {$match : {index:{$all : patterns}}},{$limit : t }], function(err, items){
@@ -100,7 +101,8 @@ exports.findDeals = function(req, res) {
       });   
     });
   }
-  else if (s && t) {
+  else if (s>=0 && t) {
+    console.log('inside s&t');
     db.collection('deals', function(err, collection) {
       collection.aggregate([{$skip: s}, {$limit: t}], function(err, items) {
           console.log(items);
@@ -109,22 +111,22 @@ exports.findDeals = function(req, res) {
       });
     });
   }
-  else if (q) {
-    console.log('inside q');
-    db.collection('deals', function(err, collection) {
-      collection.find({index : {$all: patterns }}).toArray(function(err, items) {
-        if( err || !items) {
-          res.header("Access-Control-Allow-Origin", "*");
-          console.log('nothing');
-          res.send([]);
-        } else {
-          res.header("Access-Control-Allow-Origin", "*");
-          console.log(items);
-          res.send(items);
-        }
-      }); 
-    });
-  }
+  // else if (q) {
+  //   console.log('inside q');
+  //   db.collection('deals', function(err, collection) {
+  //     collection.find({index : {$all: patterns }}).toArray(function(err, items) {
+  //       if( err || !items) {
+  //         res.header("Access-Control-Allow-Origin", "*");
+  //         console.log('nothing');
+  //         res.send([]);
+  //       } else {
+  //         res.header("Access-Control-Allow-Origin", "*");
+  //         console.log(items);
+  //         res.send(items);
+  //       }
+  //     }); 
+  //   });
+  // }
   else {
    db.collection('deals', function(err, collection) {
       collection.find().toArray(function(err, items) {
